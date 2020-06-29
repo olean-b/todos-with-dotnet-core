@@ -22,9 +22,9 @@ namespace Todos.Controllers
 		}
 
 		// GET: Todo
-		public async Task<IActionResult> Index()
+		public IActionResult Index()
 		{
-			return View("Views/Todo/Index.cshtml", await _context.Todo.ToListAsync());
+			return View("Views/Home/Index.cshtml");
 		}
 
 		public IActionResult Privacy()
