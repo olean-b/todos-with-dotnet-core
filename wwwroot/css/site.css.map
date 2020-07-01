@@ -1,8 +1,12 @@
 {
   "version": 3,
   "file": "site.css",
-  "sources": [],
-  "sourcesContent": [],
+  "sources": [
+    "../../Todo.svelte"
+  ],
+  "sourcesContent": [
+    "<style>\n  li:first-child {\n    margin-top: 0;\n  }\n</style>\n\n<script>\n  import todoList from \"./store\";\n  export let id;\n  export let task;\n  export let done;\n\n  let active = false;\n\n  function toggle() {\n    active = !active;\n  }\n\n  async function handleDelete(event) {\n    event.stopPropagation();\n    const res = await fetch(`/api/todo/${id}`, {\n      method: \"DELETE\"\n    });\n\n    if (res.status === 200) {\n      todoList.deleteTodo(id);\n      active = false;\n    }\n  }\n</script>\n\n<li\n  on:click=\"{toggle}\"\n  class=\"text-2xl shadow rounded-md mt-2 flex flex-col cursor-pointer\"\n>\n  <section class=\"p-4\">{task}</section>\n  <footer class=\"bg-gray-100 flex justify-end {!active ? 'hidden' : ''}\">\n    <button class=\"text-red-400 p-4 text-base\" on:click=\"{handleDelete}\">\n      Delete\n    </button>\n  </footer>\n</li>\n"
+  ],
   "names": [],
-  "mappings": ""
+  "mappings": "AACE,gBAAE,YAAY,AAAC,CAAC,AACd,UAAU,CAAE,CAAC,AACf,CAAC"
 }

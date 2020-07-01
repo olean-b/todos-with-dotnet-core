@@ -12,6 +12,7 @@ namespace Todos.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
+	[Produces("application/json")]
 	public class TodoController : Controller
 	{
 		private readonly TodoContext _context;
@@ -24,34 +25,32 @@ namespace Todos.Controllers
 		[HttpGet]
 		public async Task<IActionResult> Index()
 		{
-			List<Todo> list = await _context.Todo.ToListAsync();
+			List<Todo> list = await _context.Todo.OrderByDescending((t => t.UpdatedAt)).ToListAsync();
 			return Json(list);
 		}
 
 		// POST: Todo/Create
-		// To protect from overposting attacks, enable the specific properties you want to bind to, for
-		// more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([Bind("Id,Task,Done")] Todo todo)
+		public async Task<IActionResult> Create([FromBody] Todo todo)
 		{
 			DateTime now = DateTime.Now;
 			if (ModelState.IsValid)
 			{
 				todo.CreatedAt = now;
 				todo.UpdatedAt = now;
+				todo.Done = false;
 				_context.Add(todo);
 				await _context.SaveChangesAsync();
-				return RedirectToAction(nameof(Index));
+				return Json(todo);
 			}
-			return Json(todo);
+
+			return BadRequest();
 		}
 
 		// POST: Todo/Update/5
 		// To protect from overposting attacks, enable the specific properties you want to bind to, for
 		// more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-		[HttpPost]
-		[ValidateAntiForgeryToken]
+		[HttpPatch]
 		public async Task<IActionResult> Update(int id, [Bind("Id,Task,Done")] Todo todo)
 		{
 			if (id != todo.Id)
@@ -82,40 +81,22 @@ namespace Todos.Controllers
 			return BadRequest();
 		}
 
-		// DELETE: Todo/Delete/5
-		public async Task<IActionResult> Delete(int? id)
-		{
-			if (id == null)
-			{
-				return NotFound();
-			}
-
-			var todo = await _context.Todo
-					.FirstOrDefaultAsync(m => m.Id == id);
-			if (todo == null)
-			{
-				return NotFound();
-			}
-
-			return Ok();
-		}
-
 		// POST: Todo/Delete/5
-		[HttpPost, ActionName("Delete")]
-		public async Task<IActionResult> DeleteConfirmed(int id)
+		[HttpDelete("{id}")]
+		public async Task<IActionResult> Delete(int id)
 		{
 			var todo = await _context.Todo.FindAsync(id);
-			if (todo == null) {
-				return NotFound();
-			}
 
-			try {
+			try
+			{
 				_context.Todo.Remove(todo);
 				await _context.SaveChangesAsync();
 
 				return Ok();
-			} catch (Exception e) {
-				throw;
+			}
+			catch (Exception e)
+			{
+				throw e;
 			}
 
 		}

@@ -1,27 +1,22 @@
-import { writable } from 'svelte/store';
+import { writable } from "svelte/store";
 
 const TODOS = [];
 
 const { subscribe, set, update } = writable(TODOS);
 
-const fetch = async () => {
+const addTodo = (todo) => update((todos) => [todo, ...todos]);
 
-	update(data);
-}
-
-const addTodo = (todo) =>
-	update((todo) => {
-		return [...todos, todo];
-	});
+const deleteTodo = (id) => update((todos) => todos.filter((t) => t.id !== id));
 
 const reset = () => {
-	set(TODOS);
+  set(TODOS);
 };
 
 export default {
-	subscribe,
-	addTodo,
-	reset,
-	fetch,
-	set
+  deleteTodo,
+  subscribe,
+  addTodo,
+  reset,
+  fetch,
+  set,
 };
