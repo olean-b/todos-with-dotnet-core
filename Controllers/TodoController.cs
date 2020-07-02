@@ -47,11 +47,11 @@ namespace Todos.Controllers
 			return BadRequest();
 		}
 
-		// POST: Todo/Update/5
+		// PATHC: Todo/Update/5
 		// To protect from overposting attacks, enable the specific properties you want to bind to, for
 		// more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-		[HttpPatch]
-		public async Task<IActionResult> Update(int id, [Bind("Id,Task,Done")] Todo todo)
+		[HttpPatch("{id}")]
+		public async Task<IActionResult> Update(int id, [FromBody] Todo todo)
 		{
 			if (id != todo.Id)
 			{
@@ -64,6 +64,7 @@ namespace Todos.Controllers
 				{
 					_context.Update(todo);
 					await _context.SaveChangesAsync();
+					return Ok(todo);
 				}
 				catch (DbUpdateConcurrencyException)
 				{
@@ -76,7 +77,6 @@ namespace Todos.Controllers
 						throw;
 					}
 				}
-				return Ok();
 			}
 			return BadRequest();
 		}
